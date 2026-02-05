@@ -1,5 +1,4 @@
 const albumModel = require("../models/album.model.js");
-const jwt = require("jsonwebtoken");
 
 const createAlbum = async (req, res) => {
   try {
@@ -43,4 +42,22 @@ const createAlbum = async (req, res) => {
   }
 };
 
-module.exports = { createAlbum };
+const getAllAlbum = async (req, res) => {
+  try {
+    const albums = await albumModel
+      .find()
+      .populate("artist", "username")
+      .populate("musics"); //populate given all details of artist
+    res.status(200).json({
+      message: "albums fetch successfully",
+      musics: albums,
+    });
+  } catch (error) {
+    console.log("fetching album error", error);
+    return res.status(500).josn({
+      message: "unauthorized",
+    });
+  }
+};
+
+module.exports = { createAlbum, getAllAlbum };

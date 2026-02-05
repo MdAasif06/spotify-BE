@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const { deleteOne } = require("../models/music.model");
 
 const authArtist = async (req, res, next) => {
   try {
@@ -12,7 +13,7 @@ const authArtist = async (req, res, next) => {
     if (decode.role !== "artist") {
       return res.status(403).json({ message: "you don't have acccess" });
     }
-    req.user=decode  ///create new property value set decode
+    req.user = decode; ///create new property value set decode
     next();
   } catch (error) {
     console.log("while getting eroor in auth middleware", error);
@@ -22,4 +23,22 @@ const authArtist = async (req, res, next) => {
   }
 };
 
-module.exports = { authArtist };
+const authUser = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const decode = jwt.verify(token, process.env.JWT_SECRET);
+    if (decode.role !== "user" && decode.role !== "artist") {
+      return res.status(403).json({ message: "you don't have permission" });
+    }
+    req.user = decode;
+    next();
+  } catch (error) {
+    console.log("whiele access user error", error);
+    return res.status(500).json({ message: "Unauthorized" });
+  }
+};
+
+module.exports = { authArtist, authUser };

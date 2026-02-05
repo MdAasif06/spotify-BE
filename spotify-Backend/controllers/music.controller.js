@@ -49,4 +49,20 @@ const createMusic = async (req, res) => {
   }
 };
 
-module.exports = { createMusic };
+//get All music
+const getAllMusic = async (req, res) => {
+  try {
+    const musics = await musicModel.find().populate("artist","username");//populate given all details of artist
+    res.status(200).json({
+      message: "Music fetch successfully",
+      musics: musics,
+    });
+  } catch (error) {
+    console.log("fetching music error", error);
+    return res.status(500).josn({
+      message: "unauthorized",
+    });
+  }
+};
+
+module.exports = { createMusic, getAllMusic };
