@@ -46,8 +46,9 @@ const getAllAlbum = async (req, res) => {
   try {
     const albums = await albumModel
       .find()
-      .populate("artist", "username")
-      .populate("musics"); //populate given all details of artist
+      .select("title artist")
+      .populate("artist", "username");
+    //   .populate("musics"); //populate given all details of artist
     res.status(200).json({
       message: "albums fetch successfully",
       musics: albums,
@@ -60,4 +61,23 @@ const getAllAlbum = async (req, res) => {
   }
 };
 
-module.exports = { createAlbum, getAllAlbum };
+const getAlbumById = async (req, res) => {
+  try {
+    const albumId = req.params.albumId;
+    const album = await albumModel
+      .findById(albumId)
+      .populate("artist", "username email")
+      .populate("musics");
+    return res.status(200).json({
+      message: "album fetch By id successfully",
+      album: album,
+    });
+  } catch (error) {
+    console.log("fetch by id error", error);
+    return res.status(500).json({
+      message: "Unauthorized fetch by id"
+    });
+  }
+};
+
+module.exports = { createAlbum, getAllAlbum, getAlbumById };

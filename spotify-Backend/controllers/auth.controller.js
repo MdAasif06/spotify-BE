@@ -70,9 +70,11 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ message: "All fields required" });
     }
 
-    const user =await userModel.findOne({
-      $or: [{ username }, { email }],
-    }).select("+password");
+    const user = await userModel
+      .findOne({
+        $or: [{ username }, { email }],
+      })
+      .select("+password");
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -115,4 +117,9 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser ,loginUser};
+const logoutUser = async (req, res) => {
+  res.clearCookie("token");
+  res.status(200).json({ message: "user logout successfully" });
+};
+
+module.exports = { registerUser, loginUser,logoutUser };
